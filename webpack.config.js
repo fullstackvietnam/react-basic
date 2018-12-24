@@ -1,6 +1,6 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
-var MiniCssExtractPlugin = require('mini-css-extract-plugin');
+var ExtractTextPlugin = require('extract-text-webpack-plugin');
 var webpack = require('webpack');
 var path = require('path');
 
@@ -18,7 +18,12 @@ module.exports = {
     path: path.join(basePath, 'dist'),
     filename: 'bundle.js'
   },
-  devtool: 'source-map',
+  optimization: {
+    splitChunks: {
+      chunks: 'all'
+    }
+  },
+  devtool: process.env.NODE_ENV !== 'production' ? 'source-map' : 'eval-source-map',
   devServer: {
     contentBase: './dist', // Content base
     inline: true, // Enable watch and live reload
@@ -38,6 +43,8 @@ module.exports = {
         },
       }, {
         test: /\.scss$/,
+        // use: ExtractTextPlugin.extract({
+        // })
         use: [{
           loader: process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader
         }, {
@@ -48,6 +55,7 @@ module.exports = {
             // includePaths: ["absolute/path/a", "absolute/path/b"]
           }
         }]
+
       },
       {
         test: /\.css$/,
@@ -63,6 +71,10 @@ module.exports = {
     ],
   },
   plugins: [
+    // new ExtractTextPlugin({
+    //   filename: "[id][name].css",
+    //   disable: process.env.NODE_ENV === "development"
+    // }),
     //Generate index.html in /dist => https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       filename: 'index.html', //Name of file in ./dist/
