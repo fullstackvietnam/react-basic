@@ -1,5 +1,6 @@
 var HtmlWebpackPlugin = require('html-webpack-plugin');
 var MiniCssExtractPlugin = require('mini-css-extract-plugin');
+var MiniCssExtractPlugin = require('mini-css-extract-plugin');
 var webpack = require('webpack');
 var path = require('path');
 
@@ -10,9 +11,9 @@ module.exports = {
   resolve: {
     extensions: ['.js', '.ts', '.tsx']
   },
-  entry: ['@babel/polyfill', 
-          './main.tsx'
-         ],
+  entry: ['@babel/polyfill',
+    './main.tsx'
+  ],
   output: {
     path: path.join(basePath, 'dist'),
     filename: 'bundle.js'
@@ -27,18 +28,29 @@ module.exports = {
     disableHostCheck: true,
   },
   module: {
-    rules: [
-      {
+    rules: [{
         test: /\.(ts|tsx)$/,
         exclude: /node_modules/,
         loader: 'awesome-typescript-loader',
         options: {
           useBabel: true,
           "babelCore": "@babel/core", // needed for Babel v7
-        },        
-      },    
+        },
+      }, {
+        test: /\.scss$/,
+        use: [{
+          loader: process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader
+        }, {
+          loader: "css-loader"
+        }, {
+          loader: "sass-loader",
+          options: {
+            // includePaths: ["absolute/path/a", "absolute/path/b"]
+          }
+        }]
+      },
       {
-        test: /\.css$/,        
+        test: /\.css$/,
         use: [MiniCssExtractPlugin.loader, "css-loader"]
       },
       {
@@ -48,7 +60,7 @@ module.exports = {
           name: 'assets/img/[name].[ext]?[hash]'
         }
       },
-   ],
+    ],
   },
   plugins: [
     //Generate index.html in /dist => https://github.com/ampedandwired/html-webpack-plugin
@@ -61,5 +73,5 @@ module.exports = {
       filename: "[name].css",
       chunkFilename: "[id].css"
     }),
-  ],  
+  ],
 };
