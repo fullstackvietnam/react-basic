@@ -1,9 +1,9 @@
 {
   "presets": [
     [
-      "@babel/preset-env",
+      "env",
       {
-        "useBuiltIns": "entry"
+        "modules": false
       }
     ]
   ]

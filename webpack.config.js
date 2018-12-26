@@ -1,65 +1,45 @@
-var HtmlWebpackPlugin = require('html-webpack-plugin');
-var MiniCssExtractPlugin = require('mini-css-extract-plugin');
-var ExtractTextPlugin = require('extract-text-webpack-plugin');
-var webpack = require('webpack');
-var path = require('path');
+let path = require('path');
+let HtmlWebpackPlugin = require('html-webpack-plugin');
+let MiniCssExtractPlugin = require('mini-css-extract-plugin');
+let webpack = require('webpack');
 
 var basePath = __dirname;
 
 module.exports = {
-  context: path.join(basePath, "src"),
+  context: path.join(basePath, 'src'),
   resolve: {
     extensions: ['.js', '.ts', '.tsx']
   },
-  entry: ['@babel/polyfill',
-    './main.tsx'
-  ],
+  entry: {
+    app: './index.tsx',
+    appStyles: './css/site.css',
+    vendor: [
+      'react',
+      'react-dom',
+      'react-router-dom',
+    ],
+    vendorStyles: [
+      '../node_modules/bootstrap/dist/css/bootstrap.css',
+    ]
+
+  },
   output: {
     path: path.join(basePath, 'dist'),
-    filename: 'bundle.js'
-  },
-  optimization: {
-    splitChunks: {
-      chunks: 'all'
-    }
-  },
-  devtool: process.env.NODE_ENV !== 'production' ? 'source-map' : 'eval-source-map',
-  devServer: {
-    contentBase: './dist', // Content base
-    inline: true, // Enable watch and live reload
-    host: 'localhost',
-    port: 8080,
-    stats: 'errors-only',
-    disableHostCheck: true,
+    filename: '[name].js',
   },
   module: {
-    rules: [{
-        test: /\.(ts|tsx)$/,
+    rules: [
+      {
+        test: /\.ts[x]?$/,
         exclude: /node_modules/,
         loader: 'awesome-typescript-loader',
         options: {
           useBabel: true,
-          "babelCore": "@babel/core", // needed for Babel v7
         },
-      }, {
-        test: /\.scss$/,
-        // use: ExtractTextPlugin.extract({
-        // })
-        use: [{
-          loader: process.env.NODE_ENV !== 'production' ? 'style-loader' : MiniCssExtractPlugin.loader
-        }, {
-          loader: "css-loader"
-        }, {
-          loader: "sass-loader",
-          options: {
-            // includePaths: ["absolute/path/a", "absolute/path/b"]
-          }
-        }]
-
       },
       {
         test: /\.css$/,
-        use: [MiniCssExtractPlugin.loader, "css-loader"]
+        use: [MiniCssExtractPlugin.loader, "css-loader"],
       },
       {
         test: /\.(png|jpg|gif|svg)$/,
@@ -70,11 +50,13 @@ module.exports = {
       },
     ],
   },
+  // For development https://webpack.js.org/configuration/devtool/#for-development
+  devtool: 'inline-source-map',
+  devServer: {
+    port: 8080,
+    noInfo: true,
+  },
   plugins: [
-    // new ExtractTextPlugin({
-    //   filename: "[id][name].css",
-    //   disable: process.env.NODE_ENV === "development"
-    // }),
     //Generate index.html in /dist => https://github.com/ampedandwired/html-webpack-plugin
     new HtmlWebpackPlugin({
       filename: 'index.html', //Name of file in ./dist/
